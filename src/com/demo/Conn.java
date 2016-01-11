@@ -90,6 +90,7 @@ public class Conn implements Runnable {
 					.getPortIdentifier(portName);
 			// 打开串口
 			port = (SerialPort) portIdentifier.open(portName, 1000);
+			// 设置串口
 			setPort();
 			// 输出流
 			outputStream = new BufferedOutputStream(port.getOutputStream());
