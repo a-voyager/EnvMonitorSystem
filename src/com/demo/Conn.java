@@ -135,7 +135,7 @@ public class Conn implements Runnable {
 
 							// 设置文本框数据
 							tv_gas.setText(gas + "");
-							tv_tmp.setText(tmp + "℃");
+							tv_tmp.setText(tmp + "");
 							tv_hmp.setText(hmp + "");
 
 							// 报警
@@ -145,6 +145,13 @@ public class Conn implements Runnable {
 								toolkit.beep();
 							} else {
 								tv_gas.setForeground(Color.DARK_GRAY);
+							}
+							if (tmp >= 30) {
+								tv_tmp.setForeground(Color.RED);
+								Toolkit toolkit = frame.getToolkit();
+								toolkit.beep();
+							} else {
+								tv_tmp.setForeground(Color.DARK_GRAY);
 							}
 						}
 					}
