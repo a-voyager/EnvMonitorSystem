@@ -65,6 +65,8 @@ public class Conn implements Runnable {
 	private JFrame frame;
 	private BufferedWriter bw;
 
+	private boolean isRunning = false;
+
 	/**
 	 * 构造函数
 	 * 
@@ -107,6 +109,8 @@ public class Conn implements Runnable {
 			outputStream.write(msg);
 			// 立即刷新命令
 			outputStream.flush();
+			// 改变运行标志
+			isRunning = true;
 
 			bw = new BufferedWriter(new FileWriter(new File("D:/data.txt")));
 
@@ -116,9 +120,9 @@ public class Conn implements Runnable {
 			int len = 0;
 			int gas = 0, tmp = 0, hmp = 0;
 			ArrayBlockingQueue<Byte> queue = new ArrayBlockingQueue<Byte>(8);
-			while (true) {
+			while (isRunning) {
 
-				while ((len = inputStream.read(re)) != -1) {
+				while (isRunning && ((len = inputStream.read(re)) != -1)) {
 					for (int j = 0; j < len; j++) {
 						re[j]--;
 						queue.put(Byte.valueOf(re[j]));
@@ -140,7 +144,7 @@ public class Conn implements Runnable {
 
 							System.out.println("气体：" + gas + "; 温度：" + tmp
 									+ "; 湿度：" + hmp);
-							bw.write("气体：" + gas + ";   温度：" + tmp + ";   湿度："
+							bw.write("气体：" + gas + "; 温度：" + tmp + "; 湿度："
 									+ hmp);
 							bw.newLine();
 							bw.flush();
@@ -249,6 +253,10 @@ public class Conn implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void dispose() {
+		isRunning = false;
 	}
 
 }

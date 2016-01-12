@@ -19,6 +19,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.TextArea;
 
 import javax.swing.DropMode;
 
@@ -43,6 +44,11 @@ import java.text.AttributedCharacterIterator;
 
 import javax.swing.JTextArea;
 
+import java.awt.Component;
+
+import javax.swing.Box;
+import javax.swing.JScrollPane;
+
 public class UI {
 
 	/**
@@ -56,7 +62,7 @@ public class UI {
 	/**
 	 * 湿度文本框
 	 */
-	private JTextField tv_hum;
+	private JTextField tv_hmp;
 	/**
 	 * 气体浓度文本框
 	 */
@@ -72,6 +78,7 @@ public class UI {
 	private JTextField textField_2;
 	private Thread main;
 	private JComboBox<String> comboBox_1;
+	private TextArea tv_log;
 
 	/**
 	 * 程序启动类
@@ -105,7 +112,7 @@ public class UI {
 		frame = new JFrame();
 		frame.setResizable(false);
 		frame.getContentPane().setBackground(SystemColor.activeCaption);
-		frame.setBounds(100, 100, 768, 373);
+		frame.setBounds(100, 100, 778, 373);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -115,7 +122,16 @@ public class UI {
 		btn_run.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-				main = new Thread(new Conn(frame, tv_tmp, tv_hum, tv_gas));
+				Conn conn = new Conn(frame, tv_tmp, tv_hmp, tv_gas);
+				main = new Thread(conn) {
+
+					@Override
+					public void interrupt() {
+						super.interrupt();
+						conn.dispose();
+					}
+
+				};
 				main.start();
 			}
 		});
@@ -137,23 +153,23 @@ public class UI {
 		frame.getContentPane().add(tv_tmp);
 
 		// 湿度文本框
-		tv_hum = new JTextField();
-		tv_hum.setBorder(null);
-		tv_hum.setPreferredSize(new Dimension(0, 21));
-		tv_hum.setVerifyInputWhenFocusTarget(false);
-		tv_hum.setSelectionColor(Color.WHITE);
-		tv_hum.setOpaque(false);
-		tv_hum.setRequestFocusEnabled(false);
-		tv_hum.setFocusable(false);
-		tv_hum.setFocusTraversalKeysEnabled(false);
-		tv_hum.setText("00");
-		tv_hum.setHorizontalAlignment(SwingConstants.CENTER);
-		tv_hum.setForeground(Color.DARK_GRAY);
-		tv_hum.setFont(new Font("微软雅黑", Font.PLAIN, 50));
-		tv_hum.setEditable(false);
-		tv_hum.setBackground(Color.WHITE);
-		tv_hum.setBounds(309, 115, 83, 73);
-		frame.getContentPane().add(tv_hum);
+		tv_hmp = new JTextField();
+		tv_hmp.setBorder(null);
+		tv_hmp.setPreferredSize(new Dimension(0, 21));
+		tv_hmp.setVerifyInputWhenFocusTarget(false);
+		tv_hmp.setSelectionColor(Color.WHITE);
+		tv_hmp.setOpaque(false);
+		tv_hmp.setRequestFocusEnabled(false);
+		tv_hmp.setFocusable(false);
+		tv_hmp.setFocusTraversalKeysEnabled(false);
+		tv_hmp.setText("00");
+		tv_hmp.setHorizontalAlignment(SwingConstants.CENTER);
+		tv_hmp.setForeground(Color.DARK_GRAY);
+		tv_hmp.setFont(new Font("微软雅黑", Font.PLAIN, 50));
+		tv_hmp.setEditable(false);
+		tv_hmp.setBackground(Color.WHITE);
+		tv_hmp.setBounds(309, 115, 83, 73);
+		frame.getContentPane().add(tv_hmp);
 
 		// 气体浓度文本框
 		tv_gas = new JTextField();
@@ -278,7 +294,11 @@ public class UI {
 		comboBox_1.setBounds(128, 61, 83, 21);
 		frame.getContentPane().add(comboBox_1);
 
-		JTextArea tv_log = new JTextArea();
+		tv_log = new TextArea("", 0, 0, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		tv_log.setFocusTraversalKeysEnabled(false);
+		tv_log.setFocusable(false);
+		tv_log.setFont(new Font("YaHei Consolas Hybrid", Font.PLAIN, 12));
+
 		tv_log.setEditable(false);
 		tv_log.setBounds(20, 202, 732, 133);
 		frame.getContentPane().add(tv_log);
@@ -299,9 +319,9 @@ public class UI {
 					tv_log.setText("");
 					while ((line = br.readLine()) != null) {
 						i++;
-						if(i%3 == 0){
+						if (i % 3 == 0) {
 							line += "\n";
-						}else {
+						} else {
 							line += "\t\t";
 						}
 						tv_log.append(line);
@@ -319,6 +339,19 @@ public class UI {
 
 	protected void close() {
 		// TODO Auto-generated method stub
+		tv_gas.setText("0000");
+		tv_hmp.setText("00");
+		tv_tmp.setText("00");
+		tv_log.setText("");
+		tv_gas.setForeground(Color.DARK_GRAY);
+		tv_tmp.setForeground(Color.DARK_GRAY);
+		tv_hmp.setForeground(Color.DARK_GRAY);
+		tf_gas_unit.setForeground(Color.DARK_GRAY);
+		tf_gas.setForeground(Color.DARK_GRAY);
+		tf_tmp_unit.setForeground(Color.DARK_GRAY);
+		tf_tmp.setForeground(Color.DARK_GRAY);
+		tf_hmp_unit.setForeground(Color.DARK_GRAY);
+		tf_hmp.setForeground(Color.DARK_GRAY);
 		main.interrupt();
 	}
 }
