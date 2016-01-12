@@ -11,6 +11,10 @@ import java.awt.Toolkit;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -59,6 +63,7 @@ public class Conn implements Runnable {
 	 * 窗体
 	 */
 	private JFrame frame;
+	private BufferedWriter bw;
 
 	/**
 	 * 构造函数
@@ -103,6 +108,8 @@ public class Conn implements Runnable {
 			// 立即刷新命令
 			outputStream.flush();
 
+			bw = new BufferedWriter(new FileWriter(new File("D:/data.txt")));
+
 			// 缓冲区数组
 			byte[] re = new byte[8];
 			// 缓冲长度
@@ -130,8 +137,13 @@ public class Conn implements Runnable {
 							int h = queue.poll().byteValue() * 1;
 							if (g + h > 0)
 								hmp = g + h;
+
 							System.out.println("气体：" + gas + "; 温度：" + tmp
 									+ "; 湿度：" + hmp);
+							bw.write("气体：" + gas + ";   温度：" + tmp + ";   湿度："
+									+ hmp);
+							bw.newLine();
+							bw.flush();
 
 							// 设置文本框数据
 							tv_gas.setText(gas + "");
@@ -139,19 +151,38 @@ public class Conn implements Runnable {
 							tv_hmp.setText(hmp + "");
 
 							// 报警
-							if (gas >= 800) {
+							if (gas >= Constant.MAX_GAS) {
 								tv_gas.setForeground(Color.RED);
+								UI.tf_gas.setForeground(Color.RED);
+								UI.tf_gas_unit.setForeground(Color.RED);
 								Toolkit toolkit = frame.getToolkit();
 								toolkit.beep();
 							} else {
 								tv_gas.setForeground(Color.DARK_GRAY);
+								UI.tf_gas.setForeground(Color.DARK_GRAY);
+								UI.tf_gas_unit.setForeground(Color.DARK_GRAY);
 							}
-							if (tmp >= 30) {
+							if (tmp >= Constant.MAX_TMP) {
+								UI.tf_tmp.setForeground(Color.RED);
+								UI.tf_tmp_unit.setForeground(Color.RED);
 								tv_tmp.setForeground(Color.RED);
 								Toolkit toolkit = frame.getToolkit();
 								toolkit.beep();
 							} else {
 								tv_tmp.setForeground(Color.DARK_GRAY);
+								UI.tf_tmp.setForeground(Color.DARK_GRAY);
+								UI.tf_tmp_unit.setForeground(Color.DARK_GRAY);
+							}
+							if (hmp >= Constant.MAX_HMP) {
+								UI.tf_hmp.setForeground(Color.RED);
+								UI.tf_hmp_unit.setForeground(Color.RED);
+								tv_hmp.setForeground(Color.RED);
+								Toolkit toolkit = frame.getToolkit();
+								toolkit.beep();
+							} else {
+								tv_hmp.setForeground(Color.DARK_GRAY);
+								UI.tf_hmp.setForeground(Color.DARK_GRAY);
+								UI.tf_hmp_unit.setForeground(Color.DARK_GRAY);
 							}
 						}
 					}
@@ -171,6 +202,11 @@ public class Conn implements Runnable {
 				e.printStackTrace();
 			}
 			port.close();
+			try {
+				bw.close();
+			} catch (IOException e) {
+				bw = null;
+			}
 		}
 	}
 

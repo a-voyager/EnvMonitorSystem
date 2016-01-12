@@ -7,17 +7,41 @@ import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.image.ImageObserver;
+
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
 import java.awt.Font;
 import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Shape;
+
 import javax.swing.DropMode;
+
 import java.awt.Dimension;
+
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+
 import java.awt.SystemColor;
+
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.JPanel;
+import javax.swing.JComboBox;
+
+import java.awt.Canvas;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.text.AttributedCharacterIterator;
+
+import javax.swing.JTextArea;
 
 public class UI {
 
@@ -38,16 +62,16 @@ public class UI {
 	 */
 	private JTextField tv_gas;
 
-	private JTextField txtR;
-	private JTextField txtPpm;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	public static JTextField tf_hmp_unit;
+	public static JTextField tf_gas_unit;
+	public static JTextField tf_tmp_unit;
+	public static JTextField tf_tmp;
+	public static JTextField tf_hmp;
+	public static JTextField tf_gas;
 
+	private JTextField textField_2;
 	private Thread main;
-	private JButton button_1;
-	private JTextField textField_3;
-	private JTextField textField_4;
+	private JComboBox<String> comboBox_1;
 
 	/**
 	 * ³ÌÐòÆô¶¯Àà
@@ -81,7 +105,7 @@ public class UI {
 		frame = new JFrame();
 		frame.setResizable(false);
 		frame.getContentPane().setBackground(SystemColor.activeCaption);
-		frame.setBounds(100, 100, 768, 426);
+		frame.setBounds(100, 100, 768, 373);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -95,7 +119,7 @@ public class UI {
 				main.start();
 			}
 		});
-		btn_run.setBounds(154, 291, 93, 23);
+		btn_run.setBounds(542, 60, 93, 23);
 		frame.getContentPane().add(btn_run);
 
 		// ÎÂ¶ÈÎÄ±¾¿ò
@@ -145,55 +169,55 @@ public class UI {
 		tv_gas.setBounds(535, 126, 143, 55);
 		frame.getContentPane().add(tv_gas);
 
-		txtR = new JTextField();
-		txtR.setBackground(SystemColor.activeCaption);
-		txtR.setBorder(null);
-		txtR.setForeground(Color.DARK_GRAY);
-		txtR.setFont(new Font("YaHei Consolas Hybrid", Font.PLAIN, 36));
-		txtR.setHorizontalAlignment(SwingConstants.CENTER);
-		txtR.setText("RH");
-		txtR.setBounds(378, 141, 61, 31);
-		frame.getContentPane().add(txtR);
-		txtR.setColumns(10);
+		tf_hmp_unit = new JTextField();
+		tf_hmp_unit.setBackground(SystemColor.activeCaption);
+		tf_hmp_unit.setBorder(null);
+		tf_hmp_unit.setForeground(Color.DARK_GRAY);
+		tf_hmp_unit.setFont(new Font("YaHei Consolas Hybrid", Font.PLAIN, 36));
+		tf_hmp_unit.setHorizontalAlignment(SwingConstants.CENTER);
+		tf_hmp_unit.setText("RH");
+		tf_hmp_unit.setBounds(378, 141, 61, 31);
+		frame.getContentPane().add(tf_hmp_unit);
+		tf_hmp_unit.setColumns(10);
 
-		txtPpm = new JTextField();
-		txtPpm.setFocusable(false);
-		txtPpm.setFocusTraversalKeysEnabled(false);
-		txtPpm.setBackground(SystemColor.activeCaption);
-		txtPpm.setBorder(null);
-		txtPpm.setSelectionColor(Color.WHITE);
-		txtPpm.setHorizontalAlignment(SwingConstants.CENTER);
-		txtPpm.setFont(new Font("YaHei Consolas Hybrid", Font.PLAIN, 36));
-		txtPpm.setText("ppm");
-		txtPpm.setBounds(665, 126, 86, 62);
-		frame.getContentPane().add(txtPpm);
-		txtPpm.setColumns(10);
+		tf_gas_unit = new JTextField();
+		tf_gas_unit.setFocusable(false);
+		tf_gas_unit.setFocusTraversalKeysEnabled(false);
+		tf_gas_unit.setBackground(SystemColor.activeCaption);
+		tf_gas_unit.setBorder(null);
+		tf_gas_unit.setSelectionColor(Color.WHITE);
+		tf_gas_unit.setHorizontalAlignment(SwingConstants.CENTER);
+		tf_gas_unit.setFont(new Font("YaHei Consolas Hybrid", Font.PLAIN, 36));
+		tf_gas_unit.setText("ppm");
+		tf_gas_unit.setBounds(665, 126, 86, 62);
+		frame.getContentPane().add(tf_gas_unit);
+		tf_gas_unit.setColumns(10);
 
-		textField = new JTextField();
-		textField.setFocusTraversalKeysEnabled(false);
-		textField.setFocusable(false);
-		textField.setSelectionColor(SystemColor.activeCaption);
-		textField.setBorder(null);
-		textField.setHorizontalAlignment(SwingConstants.CENTER);
-		textField.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 24));
-		textField.setBackground(SystemColor.activeCaption);
-		textField.setText("\u6E29 \u5EA6");
-		textField.setBounds(10, 115, 98, 77);
-		frame.getContentPane().add(textField);
-		textField.setColumns(10);
+		tf_tmp = new JTextField();
+		tf_tmp.setFocusTraversalKeysEnabled(false);
+		tf_tmp.setFocusable(false);
+		tf_tmp.setSelectionColor(SystemColor.activeCaption);
+		tf_tmp.setBorder(null);
+		tf_tmp.setHorizontalAlignment(SwingConstants.CENTER);
+		tf_tmp.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 24));
+		tf_tmp.setBackground(SystemColor.activeCaption);
+		tf_tmp.setText("\u6E29 \u5EA6");
+		tf_tmp.setBounds(10, 115, 98, 77);
+		frame.getContentPane().add(tf_tmp);
+		tf_tmp.setColumns(10);
 
-		textField_1 = new JTextField();
-		textField_1.setText("\u6C14 \u4F53");
-		textField_1.setSelectionColor(SystemColor.activeCaption);
-		textField_1.setHorizontalAlignment(SwingConstants.CENTER);
-		textField_1.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 24));
-		textField_1.setFocusable(false);
-		textField_1.setFocusTraversalKeysEnabled(false);
-		textField_1.setColumns(10);
-		textField_1.setBorder(null);
-		textField_1.setBackground(SystemColor.activeCaption);
-		textField_1.setBounds(449, 115, 105, 77);
-		frame.getContentPane().add(textField_1);
+		tf_gas = new JTextField();
+		tf_gas.setText("\u6C14 \u4F53");
+		tf_gas.setSelectionColor(SystemColor.activeCaption);
+		tf_gas.setHorizontalAlignment(SwingConstants.CENTER);
+		tf_gas.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 24));
+		tf_gas.setFocusable(false);
+		tf_gas.setFocusTraversalKeysEnabled(false);
+		tf_gas.setColumns(10);
+		tf_gas.setBorder(null);
+		tf_gas.setBackground(SystemColor.activeCaption);
+		tf_gas.setBounds(449, 115, 105, 77);
+		frame.getContentPane().add(tf_gas);
 
 		textField_2 = new JTextField();
 		textField_2.setBorder(null);
@@ -213,42 +237,84 @@ public class UI {
 			}
 		});
 		button.setBackground(SystemColor.activeCaption);
-		button.setBounds(504, 291, 93, 23);
+		button.setBounds(645, 60, 93, 23);
 		frame.getContentPane().add(button);
-		
-		button_1 = new JButton("\u5207\u6362\u8282\u70B9");
+
+		tf_hmp = new JTextField();
+		tf_hmp.setText("\u6E7F \u5EA6");
+		tf_hmp.setSelectionColor(SystemColor.activeCaption);
+		tf_hmp.setHorizontalAlignment(SwingConstants.CENTER);
+		tf_hmp.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 24));
+		tf_hmp.setFocusable(false);
+		tf_hmp.setFocusTraversalKeysEnabled(false);
+		tf_hmp.setColumns(10);
+		tf_hmp.setBorder(null);
+		tf_hmp.setBackground(SystemColor.activeCaption);
+		tf_hmp.setBounds(225, 115, 98, 77);
+		frame.getContentPane().add(tf_hmp);
+
+		tf_tmp_unit = new JTextField();
+		tf_tmp_unit.setText("\u2103");
+		tf_tmp_unit.setHorizontalAlignment(SwingConstants.CENTER);
+		tf_tmp_unit.setForeground(Color.DARK_GRAY);
+		tf_tmp_unit.setFont(new Font("YaHei Consolas Hybrid", Font.PLAIN, 36));
+		tf_tmp_unit.setColumns(10);
+		tf_tmp_unit.setBorder(null);
+		tf_tmp_unit.setBackground(SystemColor.activeCaption);
+		tf_tmp_unit.setBounds(165, 143, 50, 31);
+		frame.getContentPane().add(tf_tmp_unit);
+
+		JComboBox<String> comboBox = new JComboBox<String>();
+		comboBox.addItem("1ºÅ½Úµã");
+		comboBox.addItem("2ºÅ½Úµã");
+		comboBox.addItem("3ºÅ½Úµã");
+		comboBox.setBounds(25, 61, 83, 21);
+		frame.getContentPane().add(comboBox);
+
+		comboBox_1 = new JComboBox<String>();
+		comboBox_1.addItem("433MHz");
+		comboBox_1.addItem("À¶ÑÀ");
+		comboBox_1.addItem("Wifi");
+		comboBox_1.setBounds(128, 61, 83, 21);
+		frame.getContentPane().add(comboBox_1);
+
+		JTextArea tv_log = new JTextArea();
+		tv_log.setEditable(false);
+		tv_log.setBounds(20, 202, 732, 133);
+		frame.getContentPane().add(tv_log);
+
+		JButton button_1 = new JButton("\u5386\u53F2\u8BB0\u5F55");
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				File file = new File(Constant.FILE_PATH);
+				if (!file.exists()) {
+					JOptionPane.showMessageDialog(frame, "ÎÞÈÎºÎÀúÊ·¼ÇÂ¼£¡", "ÌáÊ¾",
+							JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				try {
+					BufferedReader br = new BufferedReader(new FileReader(file));
+					String line = null;
+					int i = 0;
+					tv_log.setText("");
+					while ((line = br.readLine()) != null) {
+						i++;
+						if(i%3 == 0){
+							line += "\n";
+						}else {
+							line += "\t\t";
+						}
+						tv_log.append(line);
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 		button_1.setBackground(SystemColor.activeCaption);
-		button_1.setBounds(15, 82, 93, 23);
+		button_1.setBounds(439, 60, 93, 23);
 		frame.getContentPane().add(button_1);
-		
-		textField_3 = new JTextField();
-		textField_3.setText("\u6E7F \u5EA6");
-		textField_3.setSelectionColor(SystemColor.activeCaption);
-		textField_3.setHorizontalAlignment(SwingConstants.CENTER);
-		textField_3.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 24));
-		textField_3.setFocusable(false);
-		textField_3.setFocusTraversalKeysEnabled(false);
-		textField_3.setColumns(10);
-		textField_3.setBorder(null);
-		textField_3.setBackground(SystemColor.activeCaption);
-		textField_3.setBounds(225, 115, 98, 77);
-		frame.getContentPane().add(textField_3);
-		
-		textField_4 = new JTextField();
-		textField_4.setText("\u2103");
-		textField_4.setHorizontalAlignment(SwingConstants.CENTER);
-		textField_4.setForeground(Color.DARK_GRAY);
-		textField_4.setFont(new Font("YaHei Consolas Hybrid", Font.PLAIN, 36));
-		textField_4.setColumns(10);
-		textField_4.setBorder(null);
-		textField_4.setBackground(SystemColor.activeCaption);
-		textField_4.setBounds(165, 143, 50, 31);
-		frame.getContentPane().add(textField_4);
-		
-		JButton button_2 = new JButton("\u901A\u8BAF\u65B9\u5F0F");
-		button_2.setBackground(SystemColor.activeCaption);
-		button_2.setBounds(122, 82, 93, 23);
-		frame.getContentPane().add(button_2);
+
 	}
 
 	protected void close() {
